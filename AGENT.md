@@ -17,6 +17,14 @@ This repository is a minimal Android scaffold used to validate third-party libra
 - Plugin and dependency repositories are declared in `settings.gradle.kts`.
 - The project currently has no application code beyond the generated scaffold.
 
+## Governance
+
+- Treat `main` as the stable baseline.
+- Use `upgrade/*` branches for Gradle and AGP changes.
+- Keep one `app` module by default.
+- Add `samples/*` modules only when a single app no longer keeps examples isolated.
+- Do not use Git submodules for version experiments.
+
 ## Validation workflow
 
 Use the narrowest command that answers the question.
