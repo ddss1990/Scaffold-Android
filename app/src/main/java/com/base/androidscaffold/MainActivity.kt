@@ -22,7 +22,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.base.androidscaffold.ui.theme.AndroidScaffoldTheme
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: MainViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels {
+        MainViewModelFactory(
+            repository = (application as DemoApplication).appContainer.counterRepository,
+        )
+    }
+    private val appLevelViewModel: AppLevelViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +37,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    MainRoute(viewModel = viewModel)
+                    MainRoute(
+                        mainViewModel = mainViewModel,
+                        appLevelViewModel = appLevelViewModel,
+                    )
                 }
             }
         }
@@ -40,18 +48,26 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun MainRoute(viewModel: MainViewModel) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
+private fun MainRoute(
+    mainViewModel: MainViewModel,
+    appLevelViewModel: AppLevelViewModel,
+) {
+    val state by mainViewModel.uiState.collectAsStateWithLifecycle()
+    val appState by appLevelViewModel.uiState.collectAsStateWithLifecycle()
     MainScreen(
         state = state,
-        onIncrement = viewModel::increment,
+        appState = appState,
+        onIncrement = mainViewModel::increment,
+        onTrackAppEvent = appLevelViewModel::trackEvent,
     )
 }
 
 @Composable
 private fun MainScreen(
     state: MainUiState,
+    appState: AppLevelUiState,
     onIncrement: () -> Unit,
+    onTrackAppEvent: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -68,8 +84,19 @@ private fun MainScreen(
             ),
             style = MaterialTheme.typography.bodyLarge,
         )
+        Text(
+            text = stringResource(
+                R.string.app_level_status,
+                appState.applicationType,
+                appState.eventCount,
+            ),
+            style = MaterialTheme.typography.bodyLarge,
+        )
         Button(onClick = onIncrement) {
             Text(text = stringResource(R.string.increment))
+        }
+        Button(onClick = onTrackAppEvent) {
+            Text(text = stringResource(R.string.track_app_event))
         }
     }
 }
@@ -80,7 +107,9 @@ private fun MainScreenPreview() {
     AndroidScaffoldTheme {
         MainScreen(
             state = MainUiState(counter = 1, loaded = true),
+            appState = AppLevelUiState(applicationType = "DemoApplication", eventCount = 2),
             onIncrement = {},
+            onTrackAppEvent = {},
         )
     }
 }

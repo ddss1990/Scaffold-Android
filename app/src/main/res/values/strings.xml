@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">AndroidScaffold</string>
     <string name="increment">Increment</string>
+    <string name="track_app_event">Track app-level event</string>
     <string name="main_status_initial">Lifecycle + ViewModel + Flow</string>
     <string name="main_status">%1$s | counter=%2$d | loaded=%3$b</string>
+    <string name="app_level_status">%1$s | appEvents=%2$d</string>
 </resources>
